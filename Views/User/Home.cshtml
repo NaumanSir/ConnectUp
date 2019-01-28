@@ -1,0 +1,96 @@
+@using firstbelt.Models
+@model firstbelt.Models.Activity
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Activities</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            overflow: hidden;
+            margin: 0px 0px 15px 0px;
+        }
+        li {
+            float: right;
+            display: block;
+            padding: 8px;
+            background-color: lightcyan;
+        }
+    </style>
+</head>
+
+<body>
+<div id="container">
+    <div id="navbar">
+        <ul>
+            <li><a href="/logout">Logout</a></li>
+            <li>Welcome @ViewBag.CurrUser</li>
+            <li>Dojo Activity Center</li>
+        </ul>
+    </div>
+    <table>
+        <tr>
+            <th>Activity</th>
+            <th>Date & Time</th>
+            <th>Duration</th>
+            <th>Event Coordinator</th>
+            <th>Number of Participants</th>
+            <th>Actions</th>
+        </tr>
+
+    @foreach(var activity in @ViewBag.AllActivities)
+        {
+        <tr>
+            <td><a href="/activity/@activity.ActivityId">@activity.Title</a></td>
+            <td>@activity.Date at @activity.Time</td>
+            <td>@activity.Duration @activity.DurType</td>
+            <td>@activity.User.FirstName @activity.User.LastName</td>
+            <td>@activity.Participants.Count</td>
+            @if(@activity.UserId == @ViewBag.SessionId)
+            {
+                <td><a href="/delete/@activity.ActivityId">Delete</a></td>
+            }
+            else
+            {
+                bool attend = false;
+                foreach(var guest in @activity.Participants)
+                {
+                    if(@guest.UserId == @ViewBag.SessionId)
+                    {
+                        attend = true;
+                    }
+                }
+                if(attend = true)
+                {
+                <td><a href="/leave/@activity.ActivityId">Leave</a></td>
+                }
+            
+            <td><a href="/join/@activity.ActivityId">Join</a></td>
+
+            }
+        </tr>
+        }
+
+    </table>
+    <button><a href="/new">Add New Activity!</a></button>
+</div>
+</body>
